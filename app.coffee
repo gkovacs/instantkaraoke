@@ -3,7 +3,7 @@ express = require 'express'
 app = express()
 http = require 'http'
 httpserver = http.createServer(app)
-httpserver.listen(6666)
+httpserver.listen(1234)
 nowjs = require 'now'
 everyone = nowjs.initialize(httpserver)
 
@@ -32,6 +32,9 @@ getSubAtTime = (time, callback) ->
   callback(sub)
 
 everyone.now.getSubAtTime = getSubAtTime
+
+everyone.now.sendWordHighlightedToServer = (idx) ->
+  everyone.now.singerReceivesHighlightedWord(idx)
 
 everyone.now.sendWordsToServer = (words) ->
   everyone.now.singerReceivesWords(words)
