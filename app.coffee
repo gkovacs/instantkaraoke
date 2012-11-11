@@ -63,6 +63,9 @@ everyone.now.getSubAtTime = getSubAtTime
 
 root.songname = 'Default Artist - Default Song'
 
+everyone.now.sendPlayingSongId = (id) ->
+  everyone.now.singerReceivesSongId(id)
+
 everyone.now.sendPlayingSongName = (songname) ->
   root.songname = songname
   if everyone.now.singerReceivesSongName?
