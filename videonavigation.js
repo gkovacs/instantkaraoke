@@ -1,13 +1,24 @@
 function checkKey(x) {
   var vid = $('video')[0]
   console.log(x.keyCode)
+  keypressed = String.fromCharCode(event.keyCode)
+  if (keypressed.toLowerCase() == activeletter.toLowerCase()) {
+    activeWordIndex += 1
+    setActiveWordIndex(activeWordIndex)
+    return false
+  }
   if (x.keyCode == 32) { // space
+    activeWordIndex += 1
+    setActiveWordIndex(activeWordIndex)
+    return false
+    /*
     if (vid.paused)
       vid.play()
     else
       vid.pause()
     x.preventDefault()
     return false
+    */
   } else if (x.keyCode == 37) { // left arrow
     if (x.ctrlKey) {
       prevButtonPressed()

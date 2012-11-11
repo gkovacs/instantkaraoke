@@ -1,0 +1,8 @@
+video {
+  z-index: 3;
+}
+
+.wordspan {
+  font-size: 32px;
+  font-family: "Courier New", Courier, monospace
+}
