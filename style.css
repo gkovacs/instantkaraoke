@@ -18,11 +18,12 @@ video {
     margin-right: auto;
 }
 
-#track {
+#track, #songName, #lyricsDisplay {
     width: 700px;
     text-align: center;
     padding-top: 20px;
     height: 20px;
+    font-size: 20px;
 }
 
 .video {
