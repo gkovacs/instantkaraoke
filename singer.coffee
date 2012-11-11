@@ -27,6 +27,12 @@ root.fixElementPosition = fixElementPosition = (idx) ->
 
 root.words = []
 
+now.singerReceivesVideoControl = (command) ->
+  if command == 'start'
+    $('video')[0].play()
+  else if command == 'pause'
+    $('video')[0].pause()
+
 now.singerReceivesHighlightedWord = (idx) ->
   $(".lyric").css('color', 'black')
   for i in [idx+1...root.words.length]

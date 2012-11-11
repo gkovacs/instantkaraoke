@@ -109,6 +109,9 @@ everyone.now.requestSubtitles = (isrc, callback) ->
     root.subtitleGetter = new subtitleread.SubtitleRead(root.subtitleText)
     callback(subtitles)
 
+everyone.now.sendVideoControl = (command) ->
+  everyone.now.singerReceivesVideoControl(command)
+
 everyone.now.sendWordsToServer = (words) ->
   everyone.now.singerReceivesWords(words)
 

@@ -29,7 +29,7 @@
 <div id="track">
     One Republic - All The Right Moves
 </div>
-<div class="video"><video controls="controls" src="http://previews.7digital.com/clips/480/7001800.clip.mp3" ontimeupdate="onTimeChanged(this)"></video></div>
+<div class="video"><video controls="controls" src="http://previews.7digital.com/clips/480/7001800.clip.mp3" ontimeupdate="onTimeChanged(this)" onplay="now.sendVideoControl('start')" onpause="now.sendVideoControl('pause')"></video></div>
 <div align="center">
 <div id="videoSpacing"></div>
 <div id="lyricsSpacing"><br></div>
