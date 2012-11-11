@@ -2,13 +2,11 @@ root = exports ? this
 
 root.videoLoaded = ->
   videoWidth = $('video')[0].videoWidth
-  $('video').css('left', '50%')
-  $('video').css('margin-left', -Math.round(videoWidth/2))
+  $('video').css('height', '0px')
+  $('video').css('width', '300px')
 
 root.wordSet = []
 root.wordHTML = []
-
-root.singing = false
 
 replaceAll = (str, from, to) ->
   return str.split(from).join(to)
@@ -27,16 +25,15 @@ root.setWordColor = setWordColor = (i, color) ->
   root.wordHTML[i] = '<span style="color: ' + color + '"> ' + root.wordSet[i] + ' </span>'
 
 root.setActiveWordIndex = setActiveWordIndex = (idxnum) ->
+  now.sendWordHighlightedToServer(idxnum-1)
   root.activeWordIndex = idxnum
   word = root.wordSet[idxnum]
   if idxnum == root.wordSet.length and idxnum != 0
-    now.sendWordsToServer(root.wordSet)
     setWordColor(idxnum-1, 'black')
     $('#lyricsDisplay').html(root.wordHTML.join(''))
     return
   if not word?
     return
-  now.sendWordsToServer(root.wordSet[0...idxnum])
   root.activeletter = word[0..0]
   remainder = word[1..]
   activeletterspan = '<span style="color: red">' + escapeHtmlQuotes(root.activeletter) + '</span>'
@@ -52,9 +49,9 @@ root.setActiveWordIndex = setActiveWordIndex = (idxnum) ->
 subsChanged = (subs) ->
   if root.currentsubs == subs
     return
-  now.sendWordsToServer([])
   root.currentsubs = subs
   root.wordSet = (x.toUpperCase() for x in subs.split(' '))
+  now.sendWordsToServer(root.wordSet)
   root.wordHTML = []
   for word,idx in root.wordSet
     root.wordHTML.push '<span style="color: grey"> ' + escapeHtmlQuotes(word) + ' </span> '

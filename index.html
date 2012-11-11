@@ -18,10 +18,21 @@
 
 <div align="center" id="replaceMe"></div>
 
-<div align="center"><video style="position: fixed; left: 0px" controls="controls" src="alltherightmoves.webm" onloadedmetadata="videoLoaded()" ontimeupdate="onTimeChanged(this)"></video></div>
+<div id="search">
+    <form class="searchform">
+    	<input class="searchfield" type="text" name="query" value="Search..." onfocus="if (this.value == 'Search...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search...';}" />
+    	<input class="searchbutton" type="button" value="Go" />
+    </form>
+</div>
+
+<div id="track">
+    One Republic - All The Right Moves
+</div>
+<div class="video"><video controls="controls" src="http://previews.7digital.com/clips/480/8815447.clip.mp3" ontimeupdate="onTimeChanged(this)"></video></div>
 <div align="center">
 <div id="videoSpacing"></div>
-<div id="lyricsSpacing"><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>
+<div id="lyricsSpacing"><br></div>
 <div id="lyricsDisplay"></div>
 </div>
+<script type="text/javascript" src="search.js"></script>
 </body>
