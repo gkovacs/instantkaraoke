@@ -61,6 +61,9 @@ getSubAtTime = (time, callback) ->
 
 everyone.now.getSubAtTime = getSubAtTime
 
+everyone.now.sendWordHighlightedToServer = (idx) ->
+  everyone.now.singerReceivesHighlightedWord(idx)
+
 everyone.now.searchTrack = (query, callback) ->
   api = require '7digital-api'
   tracks = new api.Tracks()
