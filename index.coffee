@@ -64,3 +64,9 @@ root.onTimeChanged = (vid) ->
   now.getSubAtTime(vid.currentTime, (subs) ->
     subsChanged(subs)
   )
+
+now.ready(->
+  now.requestSubtitles('USUM70984099', (data) ->
+    console.log ''
+  )
+)

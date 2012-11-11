@@ -1,5 +1,6 @@
 $(".searchform").submit(function(event) {
   event.preventDefault();
+  $('#lyricsDisplay').html('');
   now.searchTrack(this.query.value, function(output) {
       $.each(output.response.searchResults[0].searchResult, function(i, item) {
           console.log(item.score[0] + " " + item.track[0].title);
