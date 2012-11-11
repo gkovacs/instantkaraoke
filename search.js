@@ -7,7 +7,8 @@ $(".searchform").submit(function(event) {
       }) 
       console.log(output.response.searchResults[0].searchResult[0].track[0]);
       console.log(output.response.searchResults[0].searchResult[0].track[0].isrc[0]);
-    $("#track").html(output.response.searchResults[0].searchResult[0].track[0].artist[0].name + " - " + output.response.searchResults[0].searchResult[0].track[0].title);
+    $("#track").text(output.response.searchResults[0].searchResult[0].track[0].artist[0].name + " - " + output.response.searchResults[0].searchResult[0].track[0].title);
+    now.sendPlayingSongName($("#track").text())
     now.requestPreview(output.response.searchResults[0].searchResult[0].track[0].id, function(output) {
         console.log(output.response.url[0]);
         $(".video video")[0].src = output.response.url[0];
