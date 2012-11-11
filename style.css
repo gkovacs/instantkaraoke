@@ -13,17 +13,21 @@ video {
   font-family: "Courier New", Courier, monospace
 }
 
-.video, #search, #track {
+.video, #songName, #search, #track, #title, #lyricsDisplay, .instructions {
     margin-left: auto;
     margin-right: auto;
 }
 
-#track, #songName, #lyricsDisplay, .instructions, #title {
+#track, #songName, #track, #lyricsDisplay, .instructions, #title {
     width: 700px;
     text-align: center;
     padding-top: 20px;
     height: 20px;
     font-size: 20px;
+}
+
+#lyricsDisplay {
+    width: 900px;
 }
 
 #title {
