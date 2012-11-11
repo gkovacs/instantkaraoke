@@ -55,7 +55,7 @@ root.subtitleText = getSubtitles()
 root.subtitleGetter = new subtitleread.SubtitleRead(root.subtitleText)
 
 getSubAtTime = (time, callback) ->
-  sub = root.subtitleGetter.subtitleAtTime(time + 31)
+  sub = root.subtitleGetter.subtitleAtTime(time + 30.6)
   console.log(sub)
   callback(sub)
 

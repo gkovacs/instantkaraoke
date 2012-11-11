@@ -50,7 +50,7 @@ root.setActiveWordIndex = setActiveWordIndex = (idxnum) ->
   $('#lyricsDisplay').html(root.wordHTML.join(''))
 
 subsChanged = (subs) ->
-  if root.currentsubs == subs
+  if root.currentsubs == subs or subs == ''
     return
   root.currentsubs = subs
   root.wordSet = (x.toUpperCase() for x in subs.split(' '))
