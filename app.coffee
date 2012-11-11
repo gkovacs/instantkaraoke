@@ -55,7 +55,7 @@ root.subtitleText = getSubtitles()
 root.subtitleGetter = new subtitleread.SubtitleRead(root.subtitleText)
 
 getSubAtTime = (time, callback) ->
-  sub = root.subtitleGetter.subtitleAtTime(time)
+  sub = root.subtitleGetter.subtitleAtTime(time + 31)
   console.log(sub)
   callback(sub)
 
@@ -72,7 +72,7 @@ everyone.now.searchTrack = (query, callback) ->
     callback(data)
   )
 
-everyone.now.requestTrack = (id, callback) ->
+everyone.now.requestPreview = (id, callback) ->
   api = require '7digital-api'
   tracks = new api.Tracks()
   
