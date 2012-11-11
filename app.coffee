@@ -61,7 +61,13 @@ getSubAtTime = (time, callback) ->
 
 everyone.now.getSubAtTime = getSubAtTime
 
-everyone.now.sendWordHighlightedToServer = (idx) ->
+root.songname = 'Default Artist - Default Song'
+
+everyone.now.sendPlayingSongName = (songname) ->
+  root.songname = songname
+  everyone.now.singerReceivesSongName(songname)
+
+everyone.now.sendWordHighlightedToServer = (idx, currentTime) ->
   everyone.now.singerReceivesHighlightedWord(idx)
 
 everyone.now.searchTrack = (query, callback) ->

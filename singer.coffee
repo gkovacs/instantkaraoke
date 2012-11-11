@@ -25,8 +25,12 @@ root.fixElementPosition = fixElementPosition = (idx) ->
   , 100)
 """
 
+root.words = []
+
 now.singerReceivesHighlightedWord = (idx) ->
   $(".lyric").css('color', 'black')
+  for i in [idx+1...root.words.length]
+    $('#ws' + i).css('color', 'grey')
   $('#ws' + (idx-1)).animate({
     'top': '30px'
   }, 100)
@@ -39,7 +43,12 @@ now.singerReceivesHighlightedWord = (idx) ->
   }, 100)
 
 now.singerReceivesWords = (words) ->
+  root.words = words
   $('#lyricsDisplay').html('')
   for word,i in words
-    $('#lyricsDisplay').append("<div style='position: relative; float: left; top: 30px; margin-right: 8px; color: black; font-size: 20px' id='ws#{i}' class='lyric'> " + word + " </div>")
+    $('#lyricsDisplay').append("<div style='position: relative; float: left; top: 30px; margin-right: 8px; color: grey; font-size: 20px' id='ws#{i}' class='lyric'> " + word + " </div>")
     #fixElementPosition(i)
+  #$('#ws0').css('color', 'grey')
+
+now.singerReceivesSongName = (songname) ->
+  $('#songName').text(songname)
