@@ -7,7 +7,7 @@ express = require 'express'
 app = express()
 http = require 'http'
 httpserver = http.createServer(app)
-httpserver.listen(6666)
+httpserver.listen(1234)
 nowjs = require 'now'
 everyone = nowjs.initialize(httpserver)
 
