@@ -18,7 +18,7 @@ video {
     margin-right: auto;
 }
 
-#track, #songName, #lyricsDisplay {
+#track, #songName, #lyricsDisplay, .instructions {
     width: 700px;
     text-align: center;
     padding-top: 20px;
@@ -26,6 +26,14 @@ video {
     font-size: 20px;
 }
 
+#lyricsDisplay {
+    height: 40px;
+}
+
+.instructions {
+    padding-top: 40px;
+    padding-bottom: 20px;
+}
 .video {
     /* visibility: hidden; */
     width: 300px;
