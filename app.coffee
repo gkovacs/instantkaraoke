@@ -7,7 +7,7 @@ express = require 'express'
 app = express()
 http = require 'http'
 httpserver = http.createServer(app)
-httpserver.listen(3000)
+httpserver.listen(6666)
 nowjs = require 'now'
 everyone = nowjs.initialize(httpserver)
 
@@ -98,3 +98,6 @@ everyone.now.requestSubtitles = (isrc, callback) ->
     root.subtitleText = subtitles
     root.subtitleGetter = new subtitleread.SubtitleRead(root.subtitleText)
     callback(subtitles)
+
+everyone.now.sendWordsToServer = (words) ->
+  everyone.now.singerReceivesWords(words)
