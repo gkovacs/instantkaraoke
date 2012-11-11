@@ -46,7 +46,7 @@ now.singerReceivesWords = (words) ->
   root.words = words
   $('#lyricsDisplay').html('')
   for word,i in words
-    $('#lyricsDisplay').append("<div style='position: relative; float: left; top: 30px; margin-right: 8px; color: grey; font-size: 20px' id='ws#{i}' class='lyric'> " + word + " </div>")
+    $('#lyricsDisplay').append("<span style='position: relative; top: 30px; margin-right: 8px; color: grey; font-size: 20px' id='ws#{i}' class='lyric'> " + word + " </span>")
     #fixElementPosition(i)
   #$('#ws0').css('color', 'grey')
 
