@@ -1,4 +1,7 @@
 function checkKey(x) {
+  if ($('.searchfield').is(':focus')) {
+      return;
+  }
   var vid = $('video')[0]
   console.log(x.keyCode)
   if (x.keyCode == 32) { // space

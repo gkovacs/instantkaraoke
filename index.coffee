@@ -2,8 +2,8 @@ root = exports ? this
 
 root.videoLoaded = ->
   videoWidth = $('video')[0].videoWidth
-  $('video').css('left', '50%')
-  $('video').css('margin-left', -Math.round(videoWidth/2))
+  $('video').css('height', '0px')
+  $('video').css('width', '300px')
 
 root.wordSet = []
 root.wordHTML = []
