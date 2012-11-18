@@ -63,6 +63,9 @@ class SubtitleRead
       ridx = 0
     return ridx
 
+  getSubtitleAtIndex: (idx) ->
+    return @timeAndSubtitles[idx][2]
+
   getTimesAndSubtitles: () ->
     return @timesAndSubtitles
 

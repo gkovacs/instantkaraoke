@@ -1,3 +1,4 @@
 #!/bin/sh
 
-iced -wc -o . .
+#iced -wc -o . .
+while true; do iced -c *.coffee; sleep 1; done

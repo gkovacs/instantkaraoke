@@ -1,6 +1,11 @@
 $(".searchform").submit(function(event) {
   event.preventDefault();
   $('#lyricsDisplay').html('');
+  now.setSearchBox(this.query.value, function(title, videourl, lyrics) {
+    $("#track").text(title)
+    $(".video video")[0].src = videourl;
+  })
+  /*
   now.searchTrack(this.query.value, function(output) {
       $.each(output.response.searchResults[0].searchResult, function(i, item) {
           console.log(item.score[0] + " " + item.track[0].title);
@@ -20,4 +25,5 @@ $(".searchform").submit(function(event) {
     })
   })
   $(".searchfield").blur();
+  */
 });

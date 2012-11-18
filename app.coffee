@@ -11,6 +11,10 @@ httpserver.listen(1234)
 nowjs = require 'now'
 everyone = nowjs.initialize(httpserver)
 
+lyrics_getter = require './lyrics_getter'
+
+http_get = require 'http-get'
+
 toSeconds = (time) ->
   time = time.split(',').join('.')
   [hour,min,sec] = time.split(':')
@@ -36,6 +40,7 @@ getSubtitles = ->
   return subtitles
 
 subtitleread = require './subtitleread'
+subtitleread_plain = require './subtitleread_plain'
 
 app.configure('development', () ->
   app.use(express.errorHandler())
@@ -51,28 +56,43 @@ app.configure( ->
   app.use(express.static(__dirname + '/'))
 )
 
-root.subtitleText = getSubtitles()
-root.subtitleGetter = new subtitleread.SubtitleRead(root.subtitleText)
+#root.subtitleText = getSubtitles()
+root.subtitleText = fs.readFileSync('alltherightmoves.txt', 'utf8')
+root.subtitleGetter = new subtitleread_plain.SubtitleRead(root.subtitleText)
 
 getSubAtTime = (time, callback) ->
-  sub = root.subtitleGetter.subtitleAtTime(time + 30.6)
+  #sub = root.subtitleGetter.subtitleAtTime(time + 30.6)
+  sub = root.subtitleGetter.subtitleAtTime(time)
+  console.log(sub)
+  callback(sub)
+
+getSubAtIndex = (idx, callback) ->
+  #sub = root.subtitleGetter.subtitleAtTime(time + 30.6)
+  sub = root.subtitleGetter.subtitleAtIndex(idx)
   console.log(sub)
   callback(sub)
 
 everyone.now.getSubAtTime = getSubAtTime
+everyone.now.getSubAtIndex = getSubAtIndex
 
 root.songname = 'Default Artist - Default Song'
 
 everyone.now.sendPlayingSongId = (id) ->
-  everyone.now.singerReceivesSongId(id)
+  if everyone.now.singerReceivesSongId?
+    everyone.now.singerReceivesSongId(id)
 
-everyone.now.sendPlayingSongName = (songname) ->
+everyone.now.sendPlayingSongVideo = singerReceivesSongVideo = (videourl) ->
+  if everyone.now.singerReceivesSongVideo?
+    everyone.now.singerReceivesSongVideo(videourl)
+
+everyone.now.sendPlayingSongName = sendPlayingSongName = (songname) ->
   root.songname = songname
   if everyone.now.singerReceivesSongName?
     everyone.now.singerReceivesSongName(songname)
 
 everyone.now.sendWordHighlightedToServer = (idx, currentTime) ->
-  everyone.now.singerReceivesHighlightedWord(idx)
+  if everyone.now.singerReceivesHighlightedWord?
+    everyone.now.singerReceivesHighlightedWord(idx)
 
 everyone.now.searchTrack = (query, callback) ->
   api = require '7digital-api'
@@ -105,18 +125,33 @@ everyone.now.requestSubtitles = (isrc, callback) ->
       endtimesecs = parseFloat($(x).attr('milliseconds')) / 1000.0
       [hour,min,sec,millisec] = client.toHourMinSecMillisec(endtimesecs)
       endtime = hour + ':' + min + ':' + sec + '.' + millisec
-      subtitles += starttime + ' --> ' + endtime + "\n"
-      subtitles += $(x).text() + "\n"
+      subtitles += starttime + ' --> ' + endtime + '\n'
+      subtitles += $(x).text() + '\n'
       subtitles += '\n'
     root.subtitleText = subtitles
     root.subtitleGetter = new subtitleread.SubtitleRead(root.subtitleText)
     callback(subtitles)
 
 everyone.now.sendVideoControl = (command) ->
-  everyone.now.singerReceivesVideoControl(command)
+  if everyone.now.singerReceivesVideoControl?
+    everyone.now.singerReceivesVideoControl(command)
 
 everyone.now.sendWordsToServer = (words) ->
-  everyone.now.singerReceivesWords(words)
+  if everyone.now.singerReceivesWords?
+    everyone.now.singerReceivesWords(words)
+
+everyone.now.setSearchBox = (url, callback) ->
+  lyrics_getter.getTitleLyricsVideoFromURL(url, (title, lyrics, videourl) ->
+    root.subtitleText = lyrics
+    root.subtitleGetter = new subtitleread_plain.SubtitleRead(root.subtitleText)
+    sendPlayingSongName(title)
+    singerReceivesSongVideo(videourl)
+    callback(title, lyrics, videourl)
+  )
+
+everyone.now.getTitleLyricsVideoFromURL = lyrics_getter.getTitleLyricsVideoFromURL
+everyone.now.getLyricsFromURL = lyrics_getter.getLyricsFromURL
+everyone.now.getVideoFromURL = lyrics_getter.getVideoFromURL
 
 everyone.now.getToken = (callback) ->
   #key = '21484962';    // Replace with your API key  

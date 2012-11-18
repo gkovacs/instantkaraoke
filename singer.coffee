@@ -59,6 +59,9 @@ now.singerReceivesWords = (words) ->
 now.singerReceivesSongName = (songname) ->
   $('#songName').text(songname)
 
+now.singerReceivesSongVideo = (videourl) ->
+  $(".video video")[0].src = videourl
+
 now.singerReceivesSongId = (id) ->
   now.requestPreview(id, (output) ->
     $(".video video")[0].src = output.response.url[0]

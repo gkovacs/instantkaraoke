@@ -21,6 +21,14 @@ root.activeWordIndex = 0
 root.activeletter = ''
 root.currentsubs = ''
 
+root.currentIdx = 0
+
+setCurrentIdx = root.setCurrentIdx = (idx) ->
+  root.currentIdx = Math.max(idx, 0)
+  now.getSubAtIndex(idx, (subs) ->
+    subsChanged(subs)
+  )
+
 root.setWordColor = setWordColor = (i, color) ->
   root.wordHTML[i] = '<span style="color: ' + color + '"> ' + root.wordSet[i] + ' </span>'
 
@@ -50,7 +58,7 @@ root.setActiveWordIndex = setActiveWordIndex = (idxnum) ->
   $('#lyricsDisplay').html(root.wordHTML.join(''))
 
 subsChanged = (subs) ->
-  if root.currentsubs == subs or subs == ''
+  if root.currentsubs == subs or not subs?
     return
   root.currentsubs = subs
   root.wordSet = (x.toUpperCase() for x in subs.split(' '))
@@ -61,12 +69,13 @@ subsChanged = (subs) ->
   setActiveWordIndex(0)
 
 root.onTimeChanged = (vid) ->
-  now.getSubAtTime(vid.currentTime, (subs) ->
-    subsChanged(subs)
-  )
+  #now.getSubAtTime(vid.currentTime, (subs) ->
+  #  subsChanged(subs)
+  #)
 
 now.ready(->
-  now.requestSubtitles('USUM70984099', (data) ->
-    console.log ''
-  )
+  setCurrentIdx(0)
+  #now.requestSubtitles('USUM70984099', (data) ->
+  #  console.log ''
+  #)
 )

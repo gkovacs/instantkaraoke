@@ -5,14 +5,22 @@ function checkKey(x) {
   var vid = $('video')[0]
   console.log(x.keyCode)
   keypressed = String.fromCharCode(event.keyCode)
+  
+  if (x.keyCode == 38) { // up arrow
+    setCurrentIdx(currentIdx - 1)
+    x.preventDefault()
+  } else if (x.keyCode == 40) { // down arrow
+    setCurrentIdx(currentIdx + 1)
+    x.preventDefault()
+  }
+
   if (keypressed.toLowerCase() == activeletter.toLowerCase()) {
-    activeWordIndex += 1
-    setActiveWordIndex(activeWordIndex)
+    setActiveWordIndex(activeWordIndex + 1)
     return false
   }
-  if (x.keyCode == 32) { // space
-    activeWordIndex += 1
-    setActiveWordIndex(activeWordIndex)
+  if (x.keyCode == 32 || x.keyCode == 39) { // space or right arrow
+    setActiveWordIndex(activeWordIndex + 1)
+    x.preventDefault()
     return false
     /*
     if (vid.paused)
