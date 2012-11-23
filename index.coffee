@@ -36,7 +36,7 @@ getCurrentTime = () ->
   return $('video')[0].currentTime
 
 root.setActiveWordIndex = setActiveWordIndex = (idxnum) ->
-  now.sendWordHighlightedToServer(idxnum-1, getCurrentTime())
+  now.sendWordHighlightedToServer(idxnum-1, root.currentIdx, getCurrentTime())
   root.activeWordIndex = idxnum
   word = root.wordSet[idxnum]
   if idxnum == root.wordSet.length and idxnum != 0

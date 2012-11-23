@@ -34,6 +34,42 @@ cachedDownloadRateLimited = (url, callback) ->
       )
   )
 
+root.getTitleLyricsVideoFromString = (s, callback) ->
+  if s.indexOf('http') == 0
+    root.getTitleLyricsVideoFromURL(s, callback)
+    return
+  url = 'http://mp3.zing.vn/tim-kiem/bai-hat.html?q=' + s.split(' ').join('+')
+  await
+    downloadRateLimited(url, defer(data))
+  playtimes_and_links = []
+  for x in $(data).find('.content-item')
+    if $(x).find('._trackLink').attr('href').indexOf('/bai-hat/') == 0
+      link = 'http://mp3.zing.vn' + $(x).find('._trackLink').attr('href')
+      playtimes = 0
+      for p in $(x).find('p')
+        ngheidx = $(p).text().indexOf('Lượt nghe:')
+        if ngheidx != -1
+          playtimes = parseInt($(p).text()[ngheidx + 'Lượt nghe:'.length..].split('.').join(''))
+      playtimes_and_links.push [playtimes, link]
+  playtimes_and_links.sort((a,b) ->
+    if a[0] > b[0]
+      return 1
+    else if a[0] == b[0]
+      return 0
+    else
+      return -1
+  )
+  playtimes_and_links.reverse()
+  links = (link for [playtime,link] in playtimes_and_links)
+  for link,i in links
+    if i >= 3
+      return
+    await
+      root.getTitleLyricsVideoFromURL(link, defer(title, lyrics, video))
+    if lyrics? and lyrics.length > 0
+      callback(title, lyrics, video)
+      return
+
 root.getTitleLyricsVideoFromURL = (url, callback) ->
   await
     cachedDownloadRateLimited(url, defer(data))
@@ -49,6 +85,7 @@ root.getLyricsFromURL = (url, callback) ->
     cachedDownloadRateLimited(url, (data) ->
       lyrics = $(data).find('._lyricContent').text()
       callback(lyrics)
+      return
     )
 
 root.getTitleFromURL = (url, callback) ->
@@ -57,6 +94,7 @@ root.getTitleFromURL = (url, callback) ->
     cachedDownloadRateLimited(url, (data) ->
       title = $(data).find('.detail-title').text()
       callback(title)
+      return
     )
 
 root.getVideoFromURL = (url, callback) ->
@@ -68,13 +106,14 @@ root.getVideoFromURL = (url, callback) ->
         if line.indexOf('mp3: "http://mp3.zing.vn/html5/song/') == 0
           line = line[6...-1]
           callback(line)
+          return
     )
 
 main = ->
   url = 'http://mp3.zing.vn/bai-hat/Em-Yeu-Anh-Luong-Bich-Huu/ZWZFUD87.html'
   if process.argv[2]?
     url = process.argv[2]
-  root.getTitleLyricsVideoFromURL(url, (title, lyrics, video) ->
+  root.getTitleLyricsVideoFromString(url, (title, lyrics, video) ->
     console.log lyrics
     console.log video
     console.log title

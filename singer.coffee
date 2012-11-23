@@ -25,9 +25,30 @@ root.fixElementPosition = fixElementPosition = (idx) ->
   , 100)
 """
 
+getUrlParameters = () ->
+  map = {};
+  parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) ->
+    map[key] = value
+  )
+  return map
+
+root.showplayer = false
+root.singleplayer = false
+
+$(document).ready( ->
+  params = getUrlParameters()
+  if params['showplayer']?
+    root.showplayer = true
+  if params['singleplayer']?
+    root.singleplayer = true
+    root.showplayer = true
+)
+
 root.words = []
 
 now.singerReceivesVideoControl = (command) ->
+  if not root.showplayer
+    return
   if command == 'start'
     $('video')[0].play()
   else if command == 'pause'
@@ -60,9 +81,21 @@ now.singerReceivesSongName = (songname) ->
   $('#songName').text(songname)
 
 now.singerReceivesSongVideo = (videourl) ->
+  if not root.showplayer
+    return
   $(".video video")[0].src = videourl
 
+root.videoLoaded = () ->
+  if not root.showplayer
+    return
+  videourl = $(".video video")[0].src
+  videolength = $(".video video")[0].duration
+  
+
+
 now.singerReceivesSongId = (id) ->
+  if not root.showplayer
+    return
   now.requestPreview(id, (output) ->
     $(".video video")[0].src = output.response.url[0]
   )

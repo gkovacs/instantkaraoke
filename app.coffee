@@ -15,6 +15,9 @@ lyrics_getter = require './lyrics_getter'
 
 http_get = require 'http-get'
 
+redis = require 'redis'
+rclient = redis.createClient()
+
 toSeconds = (time) ->
   time = time.split(',').join('.')
   [hour,min,sec] = time.split(':')
@@ -76,6 +79,7 @@ everyone.now.getSubAtTime = getSubAtTime
 everyone.now.getSubAtIndex = getSubAtIndex
 
 root.songname = 'Default Artist - Default Song'
+root.videourl = ''
 
 everyone.now.sendPlayingSongId = (id) ->
   if everyone.now.singerReceivesSongId?
@@ -90,9 +94,16 @@ everyone.now.sendPlayingSongName = sendPlayingSongName = (songname) ->
   if everyone.now.singerReceivesSongName?
     everyone.now.singerReceivesSongName(songname)
 
-everyone.now.sendWordHighlightedToServer = (idx, currentTime) ->
+everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime) ->
   if everyone.now.singerReceivesHighlightedWord?
     everyone.now.singerReceivesHighlightedWord(idx)
+  gwordidx = root.subtitleGetter.togwordidx(idx, lineidx)
+  console.log "idx: #{idx}, lineidx: #{lineidx}, gwordidx: #{gwordidx}"
+  currentTimeRoundedToQsec = Math.round(currentTime * 4.0)/4.0
+  if idx < 0
+    return
+  console.log root.videourl + '|tqsec' + currentTimeRoundedToQsec + '|' + gwordidx
+  rclient.hincrby(root.videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, 1)
 
 everyone.now.searchTrack = (query, callback) ->
   api = require '7digital-api'
@@ -141,7 +152,9 @@ everyone.now.sendWordsToServer = (words) ->
     everyone.now.singerReceivesWords(words)
 
 everyone.now.setSearchBox = (url, callback) ->
-  lyrics_getter.getTitleLyricsVideoFromURL(url, (title, lyrics, videourl) ->
+  lyrics_getter.getTitleLyricsVideoFromString(url, (title, lyrics, videourl) ->
+    root.songname = title
+    root.videourl = videourl
     root.subtitleText = lyrics
     root.subtitleGetter = new subtitleread_plain.SubtitleRead(root.subtitleText)
     sendPlayingSongName(title)
@@ -149,7 +162,7 @@ everyone.now.setSearchBox = (url, callback) ->
     callback(title, lyrics, videourl)
   )
 
-everyone.now.getTitleLyricsVideoFromURL = lyrics_getter.getTitleLyricsVideoFromURL
+everyone.now.getTitleLyricsVideoFromString = lyrics_getter.getTitleLyricsVideoFromString
 everyone.now.getLyricsFromURL = lyrics_getter.getLyricsFromURL
 everyone.now.getVideoFromURL = lyrics_getter.getVideoFromURL
 

@@ -13,15 +13,23 @@ class SubtitleRead
   constructor: (subtitleText) ->
     @subtitleText = subtitleText
     subtitles = []
+    gwordidx_at_linestart = []
+    gwordidx = 0
     for line in subtitleText.split('\n')
       line = line.trim()
       if line == ''
         continue
       subtitles.push line
+      gwordidx_at_linestart.push gwordidx
+      gwordidx += line.split(' ').length
     @subtitles = subtitles
+    @gwordidx_at_linestart = gwordidx_at_linestart
 
   subtitleAtIndex: (idx) ->
     return @subtitles[idx]
+
+  togwordidx: (idx, lineidx) ->
+    return @gwordidx_at_linestart[lineidx] + idx
 
 root.SubtitleRead = SubtitleRead
 root.toDeciSeconds = toDeciSeconds

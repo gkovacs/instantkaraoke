@@ -1,7 +1,7 @@
 $(".searchform").submit(function(event) {
   event.preventDefault();
   $('#lyricsDisplay').html('');
-  now.setSearchBox(this.query.value, function(title, videourl, lyrics) {
+  now.setSearchBox(this.query.value, function(title, lyrics, videourl) {
     $("#track").text(title)
     $(".video video")[0].src = videourl;
   })
