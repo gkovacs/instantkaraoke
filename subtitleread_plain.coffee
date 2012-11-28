@@ -14,16 +14,24 @@ class SubtitleRead
     @subtitleText = subtitleText
     subtitles = []
     gwordidx_at_linestart = []
+    gwordidx_to_lineidx = []
+    gwordidx_to_wordidx = []
     gwordidx = 0
-    for line in subtitleText.split('\n')
+    for line,lineidx in subtitleText.split('\n')
       line = line.trim()
       if line == ''
         continue
       subtitles.push line
+      linelength = line.split(' ').length
+      for i in [0..linelength]
+        gwordidx_to_lineidx[gwordidx + i] = lineidx
+        gwordidx_to_wordidx[gwordidx + i] = i
       gwordidx_at_linestart.push gwordidx
-      gwordidx += line.split(' ').length
+      gwordidx += linelength
     @subtitles = subtitles
     @gwordidx_at_linestart = gwordidx_at_linestart
+    @gwordidx_to_lineidx = gwordidx_to_lineidx
+    @gwordidx_to_wordidx = gwordidx_to_wordidx
     @numwords = gwordidx
 
   subtitleAtIndex: (idx) ->

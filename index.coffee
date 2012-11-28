@@ -23,10 +23,10 @@ root.currentsubs = ''
 
 root.currentIdx = 0
 
-setCurrentIdx = root.setCurrentIdx = (idx) ->
-  root.currentIdx = Math.max(idx, 0)
-  now.getSubAtIndex(idx, (subs) ->
-    subsChanged(subs)
+setCurrentIdx = root.setCurrentIdx = (lineidx) ->
+  root.currentIdx = Math.max(lineidx, 0)
+  now.getSubAtIndex(lineidx, (subs, gwordidx) ->
+    subsChanged(subs, lineidx, gwordidx)
   )
 
 root.setWordColor = setWordColor = (i, color) ->
@@ -57,12 +57,12 @@ root.setActiveWordIndex = setActiveWordIndex = (idxnum, iscorrect) ->
     setWordColor(i, 'grey')
   $('#lyricsDisplay').html(root.wordHTML.join(''))
 
-subsChanged = (subs) ->
+subsChanged = (subs, lineidx, gwordidx) ->
   if root.currentsubs == subs or not subs?
     return
   root.currentsubs = subs
   root.wordSet = (x.toUpperCase() for x in subs.split(' '))
-  now.sendWordsToServer(root.wordSet)
+  now.sendWordsToServer(root.wordSet, lineidx, gwordidx)
   root.wordHTML = []
   for word,idx in root.wordSet
     root.wordHTML.push '<span style="color: grey"> ' + escapeHtmlQuotes(word) + ' </span> '

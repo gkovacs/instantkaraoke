@@ -26,6 +26,7 @@ toSeconds = (time) ->
   sec = parseFloat(sec)
   return hour*3600 + min*60 + sec
 
+###
 getSubtitles = ->
   xmltext = fs.readFileSync('alltherightmoves.xml', 'utf8')
   subtitles = ""
@@ -41,6 +42,7 @@ getSubtitles = ->
     subtitles += $(x).text() + "\n"
     subtitles += '\n'
   return subtitles
+###
 
 subtitleread = require './subtitleread'
 subtitleread_plain = require './subtitleread_plain'
@@ -69,11 +71,12 @@ getSubAtTime = (time, callback) ->
   console.log(sub)
   callback(sub)
 
-getSubAtIndex = (idx, callback) ->
+getSubAtIndex = (lineidx, callback) ->
   #sub = root.subtitleGetter.subtitleAtTime(time + 30.6)
-  sub = root.subtitleGetter.subtitleAtIndex(idx)
+  sub = root.subtitleGetter.subtitleAtIndex(lineidx)
+  gwordidx = root.subtitleGetter.togwordidx(0, lineidx)
   console.log(sub)
-  callback(sub)
+  callback(sub, gwordidx)
 
 everyone.now.getSubAtTime = getSubAtTime
 everyone.now.getSubAtIndex = getSubAtIndex
@@ -94,6 +97,9 @@ everyone.now.sendPlayingSongName = sendPlayingSongName = (songname) ->
   if everyone.now.singerReceivesSongName?
     everyone.now.singerReceivesSongName(songname)
 
+everyone.now.getGwordIdxMaps = (callback) ->
+  callback(root.subtitleGetter.gwordidx_to_lineidx, root.subtitleGetter.gwordidx_to_wordidx, root.subtitleGetter.gwordidx_to_linestart)
+
 everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime, iscorrect) ->
   if everyone.now.singerReceivesHighlightedWord?
     everyone.now.singerReceivesHighlightedWord(idx, iscorrect)
@@ -108,19 +114,22 @@ everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime, iscorrect
 everyone.now.getTimingInfoForSong = (videourl, videolength, callback) ->
   numwords = root.subtitleGetter.numwords
   time_to_gwordnum_count = []
-###
   await
     for i in [0..Math.round(4.0 * videolength)]
       time_to_gwordnum_count[i] = []
-      currentTimeRoundedToQsec = i / 4.0
       for gwordidx in [0..numwords]
-        rclient.hget(videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, (err, data) ->
-          if data?
-            count = parseInt(data)
-            time_to_gwordnum_count[i][gwordidx] = count
-        )
+        fetchcount = (li, lgwordidx, lcallback) ->
+          currentTimeRoundedToQsec = li / 4.0
+          rclient.hget(videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, (err, data) ->
+            if data?
+              count = parseInt(data)
+              lcallback(count)
+            else
+              lcallback(0)
+          )
+        fetchcount(i, gwordidx, defer(time_to_gwordnum_count[i][gwordidx]))
+  #console.log time_to_gwordnum_count
   callback(time_to_gwordnum_count)
-###
 
 everyone.now.searchTrack = (query, callback) ->
   api = require '7digital-api'
@@ -164,9 +173,9 @@ everyone.now.sendVideoControl = (command) ->
   if everyone.now.singerReceivesVideoControl?
     everyone.now.singerReceivesVideoControl(command)
 
-everyone.now.sendWordsToServer = (words) ->
+everyone.now.sendWordsToServer = (words, lineidx, gwordidxoffset) ->
   if everyone.now.singerReceivesWords?
-    everyone.now.singerReceivesWords(words)
+    everyone.now.singerReceivesWords(words, lineidx, gwordidxoffset)
 
 everyone.now.setSearchBox = (url, callback) ->
   lyrics_getter.getTitleLyricsVideoFromString(url, (title, lyrics, videourl) ->
@@ -178,6 +187,10 @@ everyone.now.setSearchBox = (url, callback) ->
     singerReceivesSongVideo(videourl)
     callback(title, lyrics, videourl)
   )
+
+everyone.now.connectNewSinger = () ->
+  sendPlayingSongName(root.songname)
+  singerReceivesSongVideo(root.videourl)
 
 everyone.now.getTitleLyricsVideoFromString = lyrics_getter.getTitleLyricsVideoFromString
 everyone.now.getLyricsFromURL = lyrics_getter.getLyricsFromURL

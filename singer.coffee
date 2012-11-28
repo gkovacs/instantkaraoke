@@ -47,6 +47,14 @@ $(document).ready( ->
 )
 
 root.words = []
+root.time_to_gwordnum = []
+root.lineidx = 0
+root.gwordidxoffset = 0
+
+gwordidxToLocalIdx = (gwordidx) ->
+  if gwordidx < root.gwordidxoffset or gwordidx > root.gwordidxoffset + root.words.length
+    return -1
+  return gwordidxoffset - root.gwordidxoffset
 
 now.singerReceivesVideoControl = (command) ->
   if not root.showplayer
@@ -65,26 +73,43 @@ now.singerReceivesHighlightedWord = (idx, iscorrect) ->
   }, 100)
   $(".lyric").css('font-size', '20px')
   if iscorrect
-    $('#ws' + idx).css('color', 'red')
+    $('#ws' + idx).css('color', 'green')
   #$('#ws' + idx).css('top', '30px')
   #$('#ws' + idx).css('font-size', '40px')
   $('#ws' + idx).animate({
     'top': '0px'
   }, 100)
 
-now.singerReceivesWords = (words) ->
+now.singerReceivesWords = singerReceivesWords = (words, lineidx, gwordidxoffset) ->
   root.words = words
+  root.gwordidxoffset = gwordidxoffset
   $('#lyricsDisplay').html('')
   for word,i in words
     $('#lyricsDisplay').append("<span style='position: relative; top: 30px; margin-right: 8px; color: grey; font-size: 20px' id='ws#{i}' class='lyric'> " + word + " </span>")
     #fixElementPosition(i)
   #$('#ws0').css('color', 'grey')
 
+root.onTimeChanged = (vid) ->
+  if not root.singleplayer
+    return
+  time = Math.round(vid.currentTime * 4.0)
+  #console.log time
+  time_to_gwordnum = root.time_to_gwordnum
+  if not time_to_gwordnum[time]?
+    return
+  gwordidx = time_to_gwordnum[time]
+  console.log gwordidx
+  #singerReceivesWords(gwordidxToLocalIdx(gwordnum))
+
 now.singerReceivesSongName = (songname) ->
+  if $('#songName').text() == songname
+    return
   $('#songName').text(songname)
 
 now.singerReceivesSongVideo = (videourl) ->
   if not root.showplayer
+    return
+  if $(".video video")[0].src == videourl
     return
   $(".video video")[0].src = videourl
 
@@ -95,7 +120,10 @@ root.videoLoaded = () ->
   videolength = $(".video video")[0].duration
   if not root.singleplayer
     return
-  now.getTimingInfoForSong(videourl, videolength, () -> console.log 'done')
+  now.getTimingInfoForSong(videourl, videolength, (data) ->
+    #console.log data
+    root.time_to_gwordnum = compute_time_word_path(data)
+  )
 
 now.singerReceivesSongId = (id) ->
   if not root.showplayer
@@ -103,3 +131,9 @@ now.singerReceivesSongId = (id) ->
   now.requestPreview(id, (output) ->
     $(".video video")[0].src = output.response.url[0]
   )
+
+now.ready( ->
+  #console.log 'ready to go!'
+  now.connectNewSinger()
+)
+

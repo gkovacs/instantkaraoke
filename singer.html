@@ -11,6 +11,7 @@
 <body>
 <script type="text/javascript" src="/nowjs/now.js"></script>
 <script type="text/javascript" src="jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="alignment.js"></script>
 <script type="text/javascript" src="singer.js"></script>
 <script type="text/javascript" src="videonavigation.js"></script>
 <script type="text/javascript" src="http://static.opentok.com/v0.91/js/TB.min.js" charset="utf-8"></script>
@@ -21,7 +22,7 @@
 </div>
 <div id="songName" style="font-size: 20px">One Republic - All The Right Moves</div>
 <br/><br/>
-<div class="video"><video style="display: none" controls="controls" src="alltherightmoves.mp3" onloadedmetadata="videoLoaded()"></video></div>
+<div class="video"><video style="display: none" controls="controls" src="alltherightmoves.mp3" onloadedmetadata="videoLoaded()" ontimeupdate="onTimeChanged(this)"></video></div>
 <div id="lyricsDisplay"></div>
 
 <div class="instructions">Sing along! If nothing's playing, ask a friend to <a href='index.html'>control the karaoke machine</a>.</div>
