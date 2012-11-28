@@ -9,17 +9,24 @@ function checkKey(x) {
   if (x.keyCode == 38) { // up arrow
     setCurrentIdx(currentIdx - 1)
     x.preventDefault()
-  } else if (x.keyCode == 40) { // down arrow
+  } else if (x.keyCode == 40 || x.keyCode == 13) { // down arrow or return
     setCurrentIdx(currentIdx + 1)
     x.preventDefault()
   }
 
   if (keypressed.toLowerCase() == activeletter.toLowerCase()) {
-    setActiveWordIndex(activeWordIndex + 1)
+    setActiveWordIndex(activeWordIndex + 1, true)
+    return false
+  }
+  if ('abcdefghijklmnopqrstuvwxyz'.indexOf(keypressed.toLowerCase()) >= 0) {
+    setActiveWordIndex(activeWordIndex + 1, false)
     return false
   }
   if (x.keyCode == 32 || x.keyCode == 39) { // space or right arrow
-    setActiveWordIndex(activeWordIndex + 1)
+    if (activeWordIndex >= wordSet.length)
+      setCurrentIdx(currentIdx + 1)
+    else
+      setActiveWordIndex(activeWordIndex + 1, false)
     x.preventDefault()
     return false
     /*
@@ -30,7 +37,11 @@ function checkKey(x) {
     x.preventDefault()
     return false
     */
-  } else if (x.keyCode == 37) { // left arrow
+  } else if (x.keyCode == 37 || x.keyCode == 8) { // left arrow or backspace
+    setActiveWordIndex(activeWordIndex - 1, false)
+    x.preventDefault()
+    return false
+    /*
     if (x.ctrlKey) {
       prevButtonPressed()
     } else {
@@ -38,6 +49,7 @@ function checkKey(x) {
     }
     x.preventDefault()
     return false
+    */
   } else if (x.keyCode == 39) { // right arrow
     if (x.ctrlKey) {
       nextButtonPressed()
@@ -46,16 +58,17 @@ function checkKey(x) {
     }
     x.preventDefault()
     return false
-  } /*else if (x.keyCode == 38) { // up arrow
+  }
+   /*else if (x.keyCode == 38) { // up arrow
     prevButtonPressed()
     x.preventDefault()
   } else if (x.keyCode == 40) { // down arrow
     nextButtonPressed()
     x.preventDefault()
   }*/
-  else if (x.keyCode == 82) { // r button
-    recomputeAlignment()
-  }
+  //else if (x.keyCode == 82) { // r button
+  //  recomputeAlignment()
+  //}
 }
 
 $(document).keydown(checkKey)

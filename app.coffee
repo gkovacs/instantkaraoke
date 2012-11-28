@@ -94,9 +94,9 @@ everyone.now.sendPlayingSongName = sendPlayingSongName = (songname) ->
   if everyone.now.singerReceivesSongName?
     everyone.now.singerReceivesSongName(songname)
 
-everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime) ->
+everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime, iscorrect) ->
   if everyone.now.singerReceivesHighlightedWord?
-    everyone.now.singerReceivesHighlightedWord(idx)
+    everyone.now.singerReceivesHighlightedWord(idx, iscorrect)
   gwordidx = root.subtitleGetter.togwordidx(idx, lineidx)
   console.log "idx: #{idx}, lineidx: #{lineidx}, gwordidx: #{gwordidx}"
   currentTimeRoundedToQsec = Math.round(currentTime * 4.0)/4.0
@@ -104,6 +104,23 @@ everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime) ->
     return
   console.log root.videourl + '|tqsec' + currentTimeRoundedToQsec + '|' + gwordidx
   rclient.hincrby(root.videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, 1)
+
+everyone.now.getTimingInfoForSong = (videourl, videolength, callback) ->
+  numwords = root.subtitleGetter.numwords
+  time_to_gwordnum_count = []
+###
+  await
+    for i in [0..Math.round(4.0 * videolength)]
+      time_to_gwordnum_count[i] = []
+      currentTimeRoundedToQsec = i / 4.0
+      for gwordidx in [0..numwords]
+        rclient.hget(videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, (err, data) ->
+          if data?
+            count = parseInt(data)
+            time_to_gwordnum_count[i][gwordidx] = count
+        )
+  callback(time_to_gwordnum_count)
+###
 
 everyone.now.searchTrack = (query, callback) ->
   api = require '7digital-api'

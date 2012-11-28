@@ -39,9 +39,11 @@ $(document).ready( ->
   params = getUrlParameters()
   if params['showplayer']?
     root.showplayer = true
+    $('video').show()
   if params['singleplayer']?
     root.singleplayer = true
     root.showplayer = true
+    $('video').show()
 )
 
 root.words = []
@@ -54,7 +56,7 @@ now.singerReceivesVideoControl = (command) ->
   else if command == 'pause'
     $('video')[0].pause()
 
-now.singerReceivesHighlightedWord = (idx) ->
+now.singerReceivesHighlightedWord = (idx, iscorrect) ->
   $(".lyric").css('color', 'black')
   for i in [idx+1...root.words.length]
     $('#ws' + i).css('color', 'grey')
@@ -62,7 +64,8 @@ now.singerReceivesHighlightedWord = (idx) ->
     'top': '30px'
   }, 100)
   $(".lyric").css('font-size', '20px')
-  $('#ws' + idx).css('color', 'red')
+  if iscorrect
+    $('#ws' + idx).css('color', 'red')
   #$('#ws' + idx).css('top', '30px')
   #$('#ws' + idx).css('font-size', '40px')
   $('#ws' + idx).animate({
@@ -90,8 +93,9 @@ root.videoLoaded = () ->
     return
   videourl = $(".video video")[0].src
   videolength = $(".video video")[0].duration
-  
-
+  if not root.singleplayer
+    return
+  now.getTimingInfoForSong(videourl, videolength, () -> console.log 'done')
 
 now.singerReceivesSongId = (id) ->
   if not root.showplayer

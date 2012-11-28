@@ -24,6 +24,7 @@ class SubtitleRead
       gwordidx += line.split(' ').length
     @subtitles = subtitles
     @gwordidx_at_linestart = gwordidx_at_linestart
+    @numwords = gwordidx
 
   subtitleAtIndex: (idx) ->
     return @subtitles[idx]
