@@ -17,11 +17,9 @@ class SubtitleRead
     gwordidx_to_lineidx = []
     gwordidx_to_wordidx = []
     gwordidx = 0
-    for line,lineidx in subtitleText.split('\n')
-      line = line.trim()
-      if line == ''
-        continue
-      subtitles.push line
+    subtitles = (x.trim() for x in subtitleText.split('\n'))
+    subtitles = (x for x in subtitles when x != '')
+    for line,lineidx in subtitles
       linelength = line.split(' ').length
       for i in [0..linelength]
         gwordidx_to_lineidx[gwordidx + i] = lineidx

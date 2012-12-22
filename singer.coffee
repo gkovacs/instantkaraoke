@@ -64,7 +64,7 @@ now.singerReceivesVideoControl = (command) ->
   else if command == 'pause'
     $('video')[0].pause()
 
-now.singerReceivesHighlightedWord = (idx, iscorrect) ->
+now.singerReceivesHighlightedWord = singerReceivesHighlightedWord = (idx, iscorrect) ->
   $(".lyric").css('color', 'black')
   for i in [idx+1...root.words.length]
     $('#ws' + i).css('color', 'grey')
@@ -81,13 +81,17 @@ now.singerReceivesHighlightedWord = (idx, iscorrect) ->
   }, 100)
 
 now.singerReceivesWords = singerReceivesWords = (words, lineidx, gwordidxoffset) ->
-  root.words = words
+  #root.words = words
+  lidx = now.gwordidx_to_lineidx[gwordidxoffset]
+  root.words = now.subtitleLines[lidx]
   root.gwordidxoffset = gwordidxoffset
   $('#lyricsDisplay').html('')
-  for word,i in words
+  for word,i in root.words
     $('#lyricsDisplay').append("<span style='position: relative; top: 30px; margin-right: 8px; color: grey; font-size: 20px' id='ws#{i}' class='lyric'> " + word + " </span>")
     #fixElementPosition(i)
   #$('#ws0').css('color', 'grey')
+
+root.prevGwordIdx = -1
 
 root.onTimeChanged = (vid) ->
   if not root.singleplayer
@@ -98,8 +102,13 @@ root.onTimeChanged = (vid) ->
   if not time_to_gwordnum[time]?
     return
   gwordidx = time_to_gwordnum[time]
+  if gwordidx == root.prevGwordIdx
+    return
+  root.prevGwordIdx = gwordidx
   console.log gwordidx
-  #singerReceivesWords(gwordidxToLocalIdx(gwordnum))
+  singerReceivesWords(null, null, gwordidx)
+  widx = now.gwordidx_to_wordidx[gwordidx]
+  singerReceivesHighlightedWord(widx)
 
 now.singerReceivesSongName = (songname) ->
   if $('#songName').text() == songname

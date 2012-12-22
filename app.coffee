@@ -64,6 +64,9 @@ app.configure( ->
 #root.subtitleText = getSubtitles()
 root.subtitleText = fs.readFileSync('alltherightmoves.txt', 'utf8')
 root.subtitleGetter = new subtitleread_plain.SubtitleRead(root.subtitleText)
+everyone.now.subtitleLines = (x.split(' ') for x in root.subtitleGetter.subtitles)
+everyone.now.gwordidx_to_lineidx = root.subtitleGetter.gwordidx_to_lineidx
+everyone.now.gwordidx_to_wordidx = root.subtitleGetter.gwordidx_to_wordidx
 
 getSubAtTime = (time, callback) ->
   #sub = root.subtitleGetter.subtitleAtTime(time + 30.6)
@@ -183,6 +186,9 @@ everyone.now.setSearchBox = (url, callback) ->
     root.videourl = videourl
     root.subtitleText = lyrics
     root.subtitleGetter = new subtitleread_plain.SubtitleRead(root.subtitleText)
+    everyone.now.subtitleLines = (x.split(' ') for x in root.subtitleGetter.subtitles)
+    everyone.now.gwordidx_to_lineidx = root.subtitleGetter.gwordidx_to_lineidx
+    everyone.now.gwordidx_to_wordidx = root.subtitleGetter.gwordidx_to_wordidx
     sendPlayingSongName(title)
     singerReceivesSongVideo(videourl)
     callback(title, lyrics, videourl)
