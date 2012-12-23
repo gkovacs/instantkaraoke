@@ -106,13 +106,13 @@ everyone.now.getGwordIdxMaps = (callback) ->
 everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime, iscorrect) ->
   if everyone.now.singerReceivesHighlightedWord?
     everyone.now.singerReceivesHighlightedWord(idx, iscorrect)
+  if idx < 0 or idx >= everyone.now.subtitleLines[lineidx].length
+    return
   gwordidx = root.subtitleGetter.togwordidx(idx, lineidx)
   console.log "idx: #{idx}, lineidx: #{lineidx}, gwordidx: #{gwordidx}"
   currentTimeRoundedToQsec = Math.round(currentTime * 4.0)/4.0
-  if idx < 0
-    return
-  console.log root.videourl + '|tqsec' + currentTimeRoundedToQsec + '|' + gwordidx
-  rclient.hincrby(root.videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, 1)
+  console.log 'ik|' + root.videourl + '|tqsec' + currentTimeRoundedToQsec + '|' + gwordidx
+  rclient.hincrby('ik|' + root.videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, 1)
 
 everyone.now.getTimingInfoForSong = (videourl, videolength, callback) ->
   numwords = root.subtitleGetter.numwords
@@ -123,7 +123,7 @@ everyone.now.getTimingInfoForSong = (videourl, videolength, callback) ->
       for gwordidx in [0..numwords]
         fetchcount = (li, lgwordidx, lcallback) ->
           currentTimeRoundedToQsec = li / 4.0
-          rclient.hget(videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, (err, data) ->
+          rclient.hget('ik|' + videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, (err, data) ->
             if data?
               count = parseInt(data)
               lcallback(count)
