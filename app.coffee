@@ -115,8 +115,28 @@ everyone.now.sendWordHighlightedToServer = (idx, lineidx, currentTime, iscorrect
   rclient.hincrby('ik|' + root.videourl + '|tqsec' + currentTimeRoundedToQsec, gwordidx, 1)
 
 everyone.now.getTimingInfoForSong = (videourl, videolength, callback) ->
+  console.log("started getting timing info")
   numwords = root.subtitleGetter.numwords
   time_to_gwordnum_count = []
+  for i in [0..Math.round(4.0 * videolength)]
+    time_to_gwordnum_count[i] = []
+    for gwordidx in [0..numwords]
+      time_to_gwordnum_count[i][gwordidx] = 0
+  await
+    for i in [0..Math.round(4.0 * videolength)]
+      fetchcounts = (li, lcallback) ->
+        currentTimeRoundedToQsec = li / 4.0
+        rclient.hgetall('ik|' + videourl + '|tqsec' + currentTimeRoundedToQsec, (err, data) ->
+          counts = (0 for x in [0..numwords])
+          #console.log data
+          if data?
+            for gwordidx in [0..numwords]
+              if data[gwordidx]?
+                counts[gwordidx] = parseInt(data[gwordidx])
+          lcallback(counts)
+        )
+      fetchcounts(i, defer(time_to_gwordnum_count[i]))
+  ###
   await
     for i in [0..Math.round(4.0 * videolength)]
       time_to_gwordnum_count[i] = []
@@ -131,7 +151,10 @@ everyone.now.getTimingInfoForSong = (videourl, videolength, callback) ->
               lcallback(0)
           )
         fetchcount(i, gwordidx, defer(time_to_gwordnum_count[i][gwordidx]))
+  ###
+  
   #console.log time_to_gwordnum_count
+  console.log("finished getting timing info")
   callback(time_to_gwordnum_count)
 
 everyone.now.searchTrack = (query, callback) ->
