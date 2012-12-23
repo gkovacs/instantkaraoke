@@ -122,6 +122,14 @@ now.singerReceivesSongVideo = (videourl) ->
     return
   $(".video video")[0].src = videourl
 
+callOnceMethodAvailable = (method, callback) ->
+  if now[method]?
+    callback()
+  else
+    setTimeout(() ->
+      callOnceMethodAvailable(method, callback)
+    , 300)
+
 root.videoLoaded = () ->
   if not root.showplayer
     return
@@ -129,9 +137,11 @@ root.videoLoaded = () ->
   videolength = $(".video video")[0].duration
   if not root.singleplayer
     return
-  now.getTimingInfoForSong(videourl, videolength, (data) ->
-    #console.log data
-    root.time_to_gwordnum = compute_time_word_path(data)
+  callOnceMethodAvailable('getTimingInfoForSong', () ->
+    now.getTimingInfoForSong(videourl, videolength, (data) ->
+      #console.log data
+      root.time_to_gwordnum = compute_time_word_path(data)
+    )
   )
 
 now.singerReceivesSongId = (id) ->
